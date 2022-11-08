@@ -11,24 +11,24 @@ app = Flask(__name__)
 setup_db(app)
 CORS(app)
 
+# https://dev-ft6rxlg4.us.auth0.com/u/login?state=hKFo2SBpeklSc1ktUloycWYtN2lObE5uTXlZRlcxaUszNEtDYqFur3VuaXZlcnNhbC1sb2dpbqN0aWTZIFQ0UC1pMXNQemJxcHhCdGxydm1kdzZrUTU1cE5LY3J4o2NpZNkgdEVDbkZLOTV2RFQxQUZvajN4RmJoZm5pRXZKRkg0Umg
+
 '''
 @TODO uncomment the following line to initialize the datbase
 !! NOTE THIS WILL DROP ALL RECORDS AND START YOUR DB FROM SCRATCH
 !! NOTE THIS MUST BE UNCOMMENTED ON FIRST RUN
 !! Running this funciton will add one
 '''
-# db_drop_and_create_all()
+db_drop_and_create_all()
 
 # ROUTES
-'''
-@TODO implement endpoint
-    GET /drinks
-        it should be a public endpoint
-        it should contain only the drink.short() data representation
-    returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
-        or appropriate status code indicating reason for failure
-'''
+@app.route("/drinks")
+def get_drinks():
+    drinks = Drink.query.all()
 
+    formatted_drinks = [drink.short() for drink in drinks]
+
+    return jsonify({ 'success' : True, 'drinks': formatted_drinks }), 200
 
 '''
 @TODO implement endpoint
@@ -89,6 +89,14 @@ def unprocessable(error):
         "error": 422,
         "message": "unprocessable"
     }), 422
+
+@app.errorhandler(500)
+def server_error(error):
+    return jsonify({
+        "success": False,
+        "error": 500,
+        "message": "this is a server error, don't worry everything is under controle"
+    }), 500
 
 
 '''
